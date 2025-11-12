@@ -3,3 +3,21 @@
 @plugin "daisyui" {
   themes: light --default, dark --prefersdark;
 }
+.swiper-button-next,
+.swiper-button-prev {
+  width: 28px !important;
+  height: 28px !important;
+  color: #333 !important;
+}
+
+.swiper-pagination-bullets {
+  display: none;
+}
+.swiper-pagination-bullet {
+  background-color: #999;
+  opacity: 0.6;
+}
+.swiper-pagination-bullet-active {
+  background-color: #333 !important;
+  opacity: 1 !important;
+}
