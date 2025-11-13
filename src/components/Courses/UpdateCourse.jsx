@@ -108,7 +108,10 @@ const UpdateCourse = () => {
           />
           Mark as Featured
         </label>
-        <button type="submit" className="btn btn-primary w-full">
+        <button
+          type="submit"
+          className="btn text-black  bg-yellow-400 rounded-lg hover:bg-yellow-600 w-full"
+        >
           Save Changes
         </button>
       </form>

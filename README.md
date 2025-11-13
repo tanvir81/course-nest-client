@@ -1,16 +1,25 @@
-# React + Vite
+# CourseNest
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Live Site: [https://coursenest-client.vercel.app]
+(https://coursenest-client.vercel.app)
 
-Currently, two official plugins are available:
+CourseNest is a premium online learning platform designed for modern developers and creators. It offers a clean, responsive UI with powerful features for course management, enrollment, and review.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## React Compiler
+- **User Authentication**: Secure login and registration with Firebase Auth and Google Sign-In.
+- **Course Management**: Instructors can add, update, feature, and delete their own courses.
+- **Enrollment System**: Students can enroll in courses and track their progress.
+- **Review & Rating**: Inline review editing, deletion, and dynamic average rating display.
+- **Responsive Design**: Fully mobile-friendly with animated transitions and dark mode support.
+- **Image Upload**: Secure image hosting via imgbb integration.
+- **Dashboard Experience**: Personalized views for instructors and students with clean navigation.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+# Tech Stack
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- React + Vite
+- Tailwind CSS + DaisyUI
+- Firebase Authentication
+- Express.js + MongoDB (backend)
+- Axios for API communication
+- AOS for scroll animations

@@ -28,7 +28,7 @@ const item = {
 
 const HeroSection = () => {
   return (
-    <section className="relative min-h-[70vh] flex flex-col md:flex-row mt-12">
+    <section className="relative min-h-[70vh] flex flex-col md:flex-row mt-12 bg-base-100 text-base-content">
       {/* Hero Image */}
       <motion.div
         className="w-full md:w-1/2 flex justify-center items-center md:order-2"
@@ -51,16 +51,13 @@ const HeroSection = () => {
         animate="visible"
       >
         <motion.h1
-          className="text-3xl md:text-5xl font-bold leading-tight text-gray-900"
+          className="text-3xl md:text-5xl font-bold leading-tight"
           variants={item}
         >
           Welcome to <span className="text-yellow-500">CourseNest</span>
         </motion.h1>
 
-        <motion.p
-          className="mt-4 md:mt-6 text-base md:text-lg text-gray-700"
-          variants={item}
-        >
+        <motion.p className="mt-4 md:mt-6 text-base md:text-lg" variants={item}>
           Explore, enroll, and grow with expert-led courses.
         </motion.p>
 
@@ -77,7 +74,7 @@ const HeroSection = () => {
           </motion.a>
           <motion.a
             href="/register"
-            className="px-6 py-3 bg-white text-black-600 font-semibold rounded-lg shadow hover:bg-gray-100 transition"
+            className="px-6 py-3 bg-white text-black font-semibold rounded-lg shadow hover:bg-gray-100 transition dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700"
             whileHover={{ scale: 1.05 }}
           >
             Get Started

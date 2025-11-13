@@ -1,7 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../../contexts/AuthProvider";
 import { toast } from "react-hot-toast";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const AddCourse = () => {
   const { user } = useAuth();
@@ -14,6 +16,10 @@ const AddCourse = () => {
     description: "",
     isFeatured: false,
   });
+
+  useEffect(() => {
+    AOS.init({ duration: 800, once: true });
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -73,18 +79,20 @@ const AddCourse = () => {
   };
 
   return (
-    <div
-      className="min-h-screen flex items-center justify-center bg-cover bg-center p-6"
-      style={{ backgroundImage: "url('/pattern.jpg')" }}
-    >
-      <div className="max-w-md w-full bg-white shadow-md rounded-xl p-6 space-y-6">
-        <h1 className="text-2xl font-bold text-center text-gray-800">
-          Add New Course
-        </h1>
+    <div className="min-h-screen flex items-center justify-center bg-base-100 text-base-content relative overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-yellow-100 to-yellow-300 dark:from-neutral dark:to-base-300 animate-[pulse_6s_ease-in-out_infinite]" />
+
+      {/* Form Container */}
+      <div
+        className="relative z-10 max-w-md w-full bg-base-200 text-base-content shadow-md rounded-xl p-6 space-y-6"
+        data-aos="fade-up"
+      >
+        <h1 className="text-2xl font-bold text-center">Add New Course</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Instructor Info */}
-          <div className="space-y-2 border p-4 rounded-md bg-white">
+          <div className="space-y-2 border p-4 rounded-md bg-base-100">
             <h2 className="font-semibold mb-2">Instructor Details</h2>
             <input
               type="text"
@@ -111,7 +119,7 @@ const AddCourse = () => {
                     "https://i.postimg.cc/3x3QzSGq/profile.png";
                 }}
               />
-              <span className="text-sm text-gray-600">Instructor Photo</span>
+              <span className="text-sm opacity-70">Instructor Photo</span>
             </div>
           </div>
 
@@ -179,11 +187,15 @@ const AddCourse = () => {
               name="isFeatured"
               checked={formData.isFeatured}
               onChange={handleChange}
+              className="checkbox"
             />
             <span>Mark as Featured</span>
           </label>
 
-          <button type="submit" className="btn btn-primary w-full">
+          <button
+            type="submit"
+            className="btn text-black bg-[#fdc700] hover:bg-amber-200 w-full"
+          >
             Add Course
           </button>
         </form>

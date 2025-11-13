@@ -79,14 +79,17 @@ const ReviewForm = ({
         className="textarea textarea-bordered w-full"
       />
       <div className="flex gap-2">
-        <button type="submit" className="btn btn-primary">
+        <button
+          type="submit"
+          className="btn text-black bg-yellow-400 rounded-lg hover:bg-yellow-600 "
+        >
           {reviewToEdit ? "Update Review" : "Submit Review"}
         </button>
         {reviewToEdit && (
           <button
             type="button"
             onClick={onCancelEdit}
-            className="btn btn-secondary"
+            className="btn text-black bg-yellow-400 rounded-lg hover:bg-red-500 "
           >
             Cancel
           </button>
