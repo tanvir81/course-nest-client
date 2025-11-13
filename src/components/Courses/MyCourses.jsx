@@ -68,8 +68,9 @@ const MyCourses = () => {
             <div className="card-body">
               <h2 className="card-title">{course.title}</h2>
               <p>
-                {course.category} • {course.duration}
+                {course.category} • {course.duration} hour
               </p>
+              <p>{course.description}</p>
               <div className="flex justify-between items-center mt-4">
                 <span className="font-semibold">${course.price}</span>
                 <div className="flex gap-2">

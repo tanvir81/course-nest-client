@@ -50,6 +50,7 @@ const MyEnrolledCourses = () => {
               <h2 className="card-title">{enroll.courseTitle}</h2>
               <p>
                 {enroll.courseCategory} • {enroll.courseDuration}
+                <p>{enroll.description}</p>
               </p>
               <span className="font-semibold">${enroll.coursePrice}</span>
               <button

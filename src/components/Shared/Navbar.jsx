@@ -62,14 +62,14 @@ const Navbar = () => {
           {user ? (
             <button
               onClick={logout}
-              className="px-4 py-2 text-white bg-yellow-400 rounded hover:bg-yellow-700 transition"
+              className="px-4 py-2 text-white bg-yellow-400 rounded hover:bg-red-500 transition"
             >
               Logout
             </button>
           ) : (
             <NavLink
               to="/login"
-              className="px-4 py-2 text-white bg-yellow-400 rounded hover:bg-yellow-600 transition"
+              className="px-4 py-2 text-white bg-yellow-400 rounded hover:bg-yellow-500 transition"
             >
               Login
             </NavLink>

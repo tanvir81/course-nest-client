@@ -123,7 +123,10 @@ const Register = () => {
               />
             </div>
 
-            <button type="submit" className="btn btn-primary w-full">
+            <button
+              type="submit"
+              className="btn bg-yellow-400 hover:bg-yellow-500 w-full"
+            >
               Register
             </button>
           </form>
@@ -166,7 +169,10 @@ const Register = () => {
 
           <p className="text-sm text-center mt-4">
             Already have an account?{" "}
-            <Link to="/login" className="link text-blue-600 hover:underline">
+            <Link
+              to="/login"
+              className="link text-yellow-400 hover:text-yellow-600"
+            >
               Login
             </Link>
           </p>
