@@ -80,10 +80,8 @@ const AddCourse = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-base-100 text-base-content relative overflow-hidden">
-      {/* Animated Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-yellow-100 to-yellow-300 dark:from-neutral dark:to-base-300 animate-[pulse_6s_ease-in-out_infinite]" />
 
-      {/* Form Container */}
       <div
         className="relative z-10 max-w-md w-full bg-base-200 text-base-content shadow-md rounded-xl p-6 space-y-6"
         data-aos="fade-up"
@@ -91,7 +89,6 @@ const AddCourse = () => {
         <h1 className="text-2xl font-bold text-center">Add New Course</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Instructor Info */}
           <div className="space-y-2 border p-4 rounded-md bg-base-100">
             <h2 className="font-semibold mb-2">Instructor Details</h2>
             <input
