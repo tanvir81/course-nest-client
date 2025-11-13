@@ -44,7 +44,6 @@ const MyEnrolledCourses = () => {
 
   return (
     <div className="min-h-screen pt-10 bg-base-100 text-base-content relative overflow-hidden">
-      {/* Animated Background */}
       <div className="absolute inset-0 bg-gradient-to-br from-yellow-100 to-yellow-300 dark:from-neutral dark:to-base-300 animate-[pulse_6s_ease-in-out_infinite]" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4">

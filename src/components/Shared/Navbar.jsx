@@ -49,7 +49,6 @@ const Navbar = ({ setTheme }) => {
           {navLinks}
         </div>
 
-        {/* Desktop Actions */}
         <div className="hidden md:flex items-center gap-4">
           {user ? (
             <>
@@ -74,7 +73,7 @@ const Navbar = ({ setTheme }) => {
             </NavLink>
           )}
 
-          {/* Theme Toggle */}
+          {/* Theme Toggle part */}
           <div className="dropdown dropdown-end">
             <label
               tabIndex={0}
@@ -105,7 +104,7 @@ const Navbar = ({ setTheme }) => {
         </button>
       </div>
 
-      {/* Mobile Dropdown */}
+      {/* Mobile Dropdown part*/}
       {isOpen && (
         <div className="md:hidden mt-3 flex flex-col space-y-2">
           {navLinks}

@@ -9,7 +9,6 @@ const UpdateCourse = () => {
   const navigate = useNavigate();
   const [course, setCourse] = useState(null);
 
-  // Fetch course by ID
   useEffect(() => {
     axios
       .get(`http://localhost:3000/courses/${id}`)
