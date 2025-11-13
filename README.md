@@ -1,5 +1,6 @@
 # CourseNest
 
+vercel
 Live Site:
 
 CourseNest is a premium online learning platform designed for modern developers and creators. It offers a clean, responsive UI with powerful features for course management, enrollment, and review.
