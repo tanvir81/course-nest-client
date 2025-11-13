@@ -11,13 +11,13 @@ const Navbar = () => {
     <>
       <NavLink
         to="/"
-        className="px-3 py-2 text-gray-700 hover:text-blue-600 hover:scale-105 transition-transform duration-200"
+        className="px-3 py-2 text-gray-700 hover:text-yellow-500 hover:scale-105 transition-transform duration-200"
       >
         Home
       </NavLink>
       <NavLink
         to="/courses"
-        className="px-3 py-2 text-gray-700 hover:text-blue-600 hover:scale-105 transition-transform duration-200"
+        className="px-3 py-2 text-gray-700 hover:text-yellow-500 hover:scale-105 transition-transform duration-200"
       >
         Courses
       </NavLink>
@@ -25,19 +25,19 @@ const Navbar = () => {
         <>
           <NavLink
             to="/my-courses"
-            className="px-3 py-2 text-gray-700 hover:text-blue-600 hover:scale-105 transition-transform duration-200"
+            className="px-3 py-2 text-gray-700 hover:text-yellow-500 hover:scale-105 transition-transform duration-200"
           >
             My Courses
           </NavLink>
           <NavLink
             to="/enrolled"
-            className="px-3 py-2 text-gray-700 hover:text-blue-600 hover:scale-105 transition-transform duration-200"
+            className="px-3 py-2 text-gray-700 hover:text-yellow-500 hover:scale-105 transition-transform duration-200"
           >
             Enrolled
           </NavLink>
           <NavLink
             to="/add-course"
-            className="px-3 py-2 text-gray-700 hover:text-blue-600 hover:scale-105 transition-transform duration-200"
+            className="px-3 py-2 text-gray-700 hover:text-yellow-500 hover:scale-105 transition-transform duration-200"
           >
             Add Course
           </NavLink>
@@ -50,7 +50,7 @@ const Navbar = () => {
     <nav className="bg-white shadow-md px-6 py-3">
       <div className="flex items-center justify-between">
         {/* Logo on the left */}
-        <Link to="/" className="text-2xl font-bold text-blue-600">
+        <Link to="/" className="text-2xl font-bold text-yellow-500">
           CourseNest
         </Link>
 
@@ -62,14 +62,14 @@ const Navbar = () => {
           {user ? (
             <button
               onClick={logout}
-              className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 transition"
+              className="px-4 py-2 text-white bg-yellow-400 rounded hover:bg-yellow-700 transition"
             >
               Logout
             </button>
           ) : (
             <NavLink
               to="/login"
-              className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 transition"
+              className="px-4 py-2 text-white bg-yellow-400 rounded hover:bg-yellow-600 transition"
             >
               Login
             </NavLink>
