@@ -1,7 +1,7 @@
 # CourseNest
 
 vercel
-Live Site:
+Live Site:https://course-nest-6d3e1.web.app
 
 CourseNest is a premium online learning platform designed for modern developers and creators. It offers a clean, responsive UI with powerful features for course management, enrollment, and review.
 
