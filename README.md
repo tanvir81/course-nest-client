@@ -119,6 +119,8 @@ VITE_BASE_URL=your_backend_url
 ```bash
 npm run dev
 ```
+
+## Folder Structure
 ```
 CourseNest/
 │
