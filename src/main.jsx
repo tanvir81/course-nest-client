@@ -22,7 +22,7 @@ import AboutUs from "./pages/AboutUs.jsx";
 import ContactUs from "./pages/ContactUs.jsx";
 import ErrorPage from "./pages/ErrorPage.jsx";
 import GlobalLoader from "./components/Shared/GlobalLoader.jsx";
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_API_BASE_URL || "https://course-nest-server-six.vercel.app";
 
 const router = createBrowserRouter([
   {

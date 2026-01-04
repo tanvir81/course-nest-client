@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router";
-import axios from "axios";
+import useAxios from "../../api/useAxios";
 import { HiClock, HiTag, HiArrowRight, HiCurrencyDollar, HiUsers, HiStar } from "react-icons/hi";
 
 const CourseCard = ({ course }) => {
   const [rating, setRating] = useState(null);
+  const axiosPublic = useAxios();
 
   useEffect(() => {
     if (course?._id) {
-      axios
-        .get(`https://course-nest-server-six.vercel.app/courses/${course._id}/average-rating`)
+      axiosPublic
+        .get(`/courses/${course._id}/average-rating`)
         .then((res) => setRating(res.data.average))
         .catch(() => setRating(0));
     }
-  }, [course?._id]);
+  }, [course?._id, axiosPublic]);
 
   return (
     <div className="flex flex-col h-full bg-white group overflow-hidden border border-black/10 transition-all duration-300 hover:shadow-2xl">
