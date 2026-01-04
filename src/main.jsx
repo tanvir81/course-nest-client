@@ -48,11 +48,7 @@ const router = createBrowserRouter([
              throw new Response("Failure to Resolve Data", { status: 500 });
           }
         },
-        element: (
-          <PrivateRoute>
-            <CourseDetails />
-          </PrivateRoute>
-        ),
+        element: <CourseDetails />,
         hydrateFallbackElement: <GlobalLoader message="Loading Details..." />,
       },
       {
