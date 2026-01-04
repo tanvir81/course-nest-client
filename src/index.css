@@ -1,23 +1,91 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Outfit:ital,wght@0,100..0,900;1,100..1,900&display=swap');
 @plugin "daisyui";
+
 @plugin "daisyui" {
   themes: light --default, dark --prefersdark;
 }
-.swiper-button-next,
-.swiper-button-prev {
-  width: 28px !important;
-  height: 28px !important;
-  color: #333 !important;
+
+/* Monochromatic Design Tokens */
+@theme {
+  --color-primary: #000000;
+  --color-secondary: #ffffff;
+  --color-accent: #f5f5f5; /* Neutral Light Gray */
+  --color-text-main: #1a1a1a;
+  --color-text-muted: #666666;
+  --font-elegant: "Outfit", sans-serif;
 }
 
-.swiper-pagination-bullets {
+/* Global Styles */
+@layer base {
+  body {
+    @apply transition-colors duration-300 antialiased overflow-x-hidden bg-white text-black;
+    font-family: var(--font-elegant);
+  }
+}
+
+@layer components {
+  .section-padding {
+    @apply py-20 px-6 md:px-12;
+  }
+  
+  .glass-nav {
+    @apply sticky top-0 z-50 backdrop-blur-xl bg-white/80 border-b border-black/5 transition-all duration-300;
+  }
+
+  .btn-minimal {
+    @apply bg-black text-white hover:bg-neutral-800 transition-all px-8 py-3 rounded-full font-semibold;
+  }
+
+  .btn-ghost-minimal {
+    @apply bg-transparent text-black hover:bg-black hover:text-white transition-all px-8 py-3 rounded-full font-semibold border border-black/10;
+  }
+
+  .card-minimal {
+    @apply bg-white border border-black/5 rounded-[2rem] overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500;
+  }
+
+  .section-banner {
+    @apply relative overflow-hidden bg-black;
+    background-image: url('/section-background.png');
+    background-size: cover;
+    background-position: center;
+  }
+}
+
+/* Scroll Customization */
+/* Scroll Customization - Hidden */
+::-webkit-scrollbar {
   display: none;
+  width: 0;
+  background: transparent;
 }
-.swiper-pagination-bullet {
-  background-color: #999;
-  opacity: 0.6;
+html {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
 }
-.swiper-pagination-bullet-active {
-  background-color: #333 !important;
-  opacity: 1 !important;
+
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+/* Custom Scrollbar for Dashboards */
+.custom-scrollbar::-webkit-scrollbar {
+  display: block;
+  width: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
 }

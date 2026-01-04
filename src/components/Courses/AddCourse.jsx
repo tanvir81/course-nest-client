@@ -1,12 +1,24 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import useAxios from "../../api/useAxios";
 import { useAuth } from "../../contexts/AuthProvider";
 import { toast } from "react-hot-toast";
-import AOS from "aos";
-import "aos/dist/aos.css";
+import { HiTag, HiClock, HiCurrencyDollar, HiTranslate, HiPencilAlt, HiUpload, HiArrowLeft, HiSparkles } from "react-icons/hi";
+import axios from "axios";
+import { Link, useNavigate } from "react-router";
+import ButtonLoader from "../Shared/ButtonLoader";
+import GlobalLoader from "../Shared/GlobalLoader";
 
 const AddCourse = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const axiosSecure = useAxios();
+  const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setInitialLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, []);
   const [formData, setFormData] = useState({
     title: "",
     imageUrl: "",
@@ -17,9 +29,7 @@ const AddCourse = () => {
     isFeatured: false,
   });
 
-  useEffect(() => {
-    AOS.init({ duration: 800, once: true });
-  }, []);
+  if (initialLoading) return <GlobalLoader message="Preparing the pedagogical canvas..." />;
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -37,21 +47,24 @@ const AddCourse = () => {
     formDataImg.append("image", file);
 
     try {
+      setLoading(true);
       const res = await axios.post(
-        `https://api.imgbb.com/1/upload?key=51cf2af8b48eb5d916dd2d4dd09b0a3f`,
+        `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMGBB_KEY || "51cf2af8b48eb5d916dd2d4dd09b0a3f"}`,
         formDataImg
       );
       const url = res.data.data.display_url;
       setFormData((prev) => ({ ...prev, imageUrl: url }));
-      toast.success("Image uploaded successfully!");
+      toast.success("Thumbnail uploaded!");
     } catch (err) {
-      console.log(err);
-      toast.error("Image upload failed");
+      toast.error("Upload failed");
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     const newCourse = {
       ...formData,
@@ -62,140 +75,120 @@ const AddCourse = () => {
     };
 
     try {
-      await axios.post("http://localhost:3000/courses", newCourse);
-      toast.success("Course added successfully!");
-      setFormData({
-        title: "",
-        imageUrl: "",
-        price: "",
-        duration: "",
-        category: "",
-        description: "",
-        isFeatured: false,
-      });
+      await axiosSecure.post(
+        "/courses",
+        newCourse
+      );
+      toast.success("Course published successfully!");
+      navigate("/my-courses");
     } catch (err) {
-      toast.error("Failed to add course: " + err.message);
+      toast.error("Failed to publish course");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-base-100 text-base-content relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-yellow-100 to-yellow-300 dark:from-neutral dark:to-base-300 animate-[pulse_6s_ease-in-out_infinite]" />
+    <div className="min-h-screen bg-white pb-32 font-['Outfit'] antialiased">
+      <div className="section-banner py-24 text-white">
+        <div className="absolute inset-0 bg-black/60"></div>
+        <div className="max-w-7xl mx-auto px-6 relative z-10 flex flex-col md:flex-row justify-between items-center gap-12">
+           <div className="max-w-2xl">
+              <Link to="/my-courses" className="text-neutral-500 font-black text-[10px] uppercase tracking-[0.3em] flex items-center gap-2 mb-8 hover:text-white transition-colors">
+                 <HiArrowLeft /> Return to Workspace
+              </Link>
+              <h1 className="text-5xl md:text-7xl font-black mb-6 tracking-tighter">Publish <span className="italic text-[#8B5CF6]">Curriculum.</span></h1>
+              <p className="text-neutral-400 font-medium text-xl leading-relaxed">Design a professional creative journey for your global audience.</p>
+           </div>
+           {formData.imageUrl ? (
+             <div className="relative group">
+                <img src={formData.imageUrl} className="w-80 h-44 rounded-[2rem] object-cover shadow-2xl border-2 border-white/10 transition-all duration-700" alt="Preview" />
+                <div className="absolute -top-4 -right-4 w-12 h-12 bg-white text-black rounded-full flex items-center justify-center text-xl shadow-2xl"><HiSparkles /></div>
+             </div>
+           ) : (
+             <div className="w-80 h-44 rounded-[2rem] bg-white/5 border-2 border-dashed border-white/20 flex items-center justify-center text-white/20">
+                <span className="text-[10px] font-black uppercase tracking-widest text-center px-10 leading-relaxed">Awaiting High-Resolution Thumbnail</span>
+             </div>
+           )}
+        </div>
+      </div>
 
-      <div
-        className="relative z-10 max-w-md w-full bg-base-200 text-base-content shadow-md rounded-xl p-6 space-y-6"
-        data-aos="fade-up"
-      >
-        <h1 className="text-2xl font-bold text-center">Add New Course</h1>
+      <div className="max-w-5xl mx-auto px-6 -mt-12 relative z-20">
+         <form onSubmit={handleSubmit} className="bg-white p-12 md:p-20 rounded-[4rem] shadow-2xl shadow-black/5 border border-black/5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+               {/* Left Column */}
+               <div className="space-y-10">
+                  <div className="space-y-3">
+                     <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 ml-1">Composition Title</label>
+                     <div className="relative">
+                        <HiTag className="absolute left-6 top-1/2 -translate-y-1/2 text-neutral-300 text-xl" />
+                        <input name="title" value={formData.title} onChange={handleChange} placeholder="e.g. Creative Mastery in 30 Days" className="w-full h-16 pl-14 pr-6 rounded-[1.5rem] bg-neutral-50 border border-black/5 focus:bg-white focus:border-black focus:ring-0 outline-none transition-all font-bold" required />
+                     </div>
+                  </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2 border p-4 rounded-md bg-base-100">
-            <h2 className="font-semibold mb-2">Instructor Details</h2>
-            <input
-              type="text"
-              value={user?.displayName || "Anonymous"}
-              readOnly
-              className="input input-bordered w-full"
-            />
-            <input
-              type="email"
-              value={user?.email || ""}
-              readOnly
-              className="input input-bordered w-full"
-            />
-            <div className="flex items-center gap-3">
-              <img
-                src={
-                  user?.photoURL || "https://i.postimg.cc/3x3QzSGq/profile.png"
-                }
-                alt="Instructor"
-                referrerPolicy="no-referrer"
-                className="w-12 h-12 rounded-full border object-cover"
-                onError={(e) => {
-                  e.currentTarget.src =
-                    "https://i.postimg.cc/3x3QzSGq/profile.png";
-                }}
-              />
-              <span className="text-sm opacity-70">Instructor Photo</span>
+                  <div className="grid grid-cols-2 gap-8">
+                     <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 ml-1">Valuation ($)</label>
+                        <div className="relative">
+                           <HiCurrencyDollar className="absolute left-6 top-1/2 -translate-y-1/2 text-neutral-300 text-xl" />
+                           <input type="number" name="price" value={formData.price} onChange={handleChange} placeholder="0.00" className="w-full h-16 pl-14 pr-6 rounded-[1.5rem] bg-neutral-50 border border-black/5 focus:bg-white focus:border-black focus:ring-0 outline-none transition-all font-bold" required />
+                        </div>
+                     </div>
+                     <div className="space-y-3">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 ml-1">Temporal Span</label>
+                        <div className="relative">
+                           <HiClock className="absolute left-6 top-1/2 -translate-y-1/2 text-neutral-300 text-xl" />
+                           <input name="duration" value={formData.duration} onChange={handleChange} placeholder="e.g. 24h" className="w-full h-16 pl-14 pr-6 rounded-[1.5rem] bg-neutral-50 border border-black/5 focus:bg-white focus:border-black focus:ring-0 outline-none transition-all font-bold" required />
+                        </div>
+                     </div>
+                  </div>
+
+                  <div className="space-y-3">
+                     <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 ml-1">Classification</label>
+                     <div className="relative">
+                        <HiTranslate className="absolute left-6 top-1/2 -translate-y-1/2 text-neutral-300 text-xl" />
+                        <input name="category" value={formData.category} onChange={handleChange} placeholder="e.g. Visual Arts" className="w-full h-16 pl-14 pr-6 rounded-[1.5rem] bg-neutral-50 border border-black/5 focus:bg-white focus:border-black focus:ring-0 outline-none transition-all font-bold" required />
+                     </div>
+                  </div>
+               </div>
+
+               {/* Right Column */}
+               <div className="space-y-10">
+                  <div className="space-y-3">
+                     <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 ml-1">Visual Asset</label>
+                     <div className="relative group">
+                        <div className="absolute inset-0 bg-neutral-50 rounded-[1.5rem] border border-black/5 group-hover:bg-neutral-100 group-hover:border-black/20 transition-all flex flex-col items-center justify-center p-6">
+                           <HiUpload className="text-3xl text-neutral-300 mb-3 group-hover:text-black transition-colors" />
+                           <span className="text-[10px] font-black uppercase tracking-widest text-neutral-400">Select Image Material</span>
+                        </div>
+                        <input type="file" accept="image/*" onChange={handleImageUpload} className="opacity-0 w-full h-36 cursor-pointer relative z-10" />
+                     </div>
+                  </div>
+
+                  <div className="space-y-3">
+                     <label className="text-[10px] font-black uppercase tracking-widest text-neutral-400 ml-1">Philosophical Abstract</label>
+                     <div className="relative">
+                        <HiPencilAlt className="absolute left-6 top-8 -translate-y-1/2 text-neutral-300 text-xl" />
+                        <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Elaborate on the learning trajectory..." className="w-full h-44 pl-14 pr-6 py-6 rounded-[2rem] bg-neutral-50 border border-black/5 focus:bg-white focus:border-black focus:ring-0 outline-none transition-all font-medium resize-none leading-relaxed" required />
+                     </div>
+                  </div>
+
+                  <label className="flex items-center gap-5 cursor-pointer p-6 bg-neutral-50 rounded-[1.5rem] border border-black/5 hover:border-black transition-all group">
+                     <input type="checkbox" name="isFeatured" checked={formData.isFeatured} onChange={handleChange} className="w-6 h-6 border-2 border-black/10 rounded accent-black" />
+                     <div className="flex flex-col">
+                        <span className="font-black text-xs uppercase tracking-widest text-neutral-400 group-hover:text-black transition-colors">Featured Publication</span>
+                        <span className="text-[10px] font-black text-neutral-300 uppercase tracking-widest">Elevate to Primary Showcase</span>
+                     </div>
+                  </label>
+               </div>
             </div>
-          </div>
 
-          {/* Course Fields */}
-          <input
-            type="text"
-            name="title"
-            placeholder="Course Title"
-            value={formData.title}
-            onChange={handleChange}
-            className="input input-bordered w-full"
-            required
-          />
-
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImageUpload}
-            className="file-input file-input-bordered w-full"
-            required
-          />
-
-          <input
-            type="number"
-            name="price"
-            placeholder="Price"
-            value={formData.price}
-            onChange={handleChange}
-            className="input input-bordered w-full"
-            required
-          />
-
-          <input
-            type="text"
-            name="duration"
-            placeholder="Duration (e.g. 6h)"
-            value={formData.duration}
-            onChange={handleChange}
-            className="input input-bordered w-full"
-            required
-          />
-
-          <input
-            type="text"
-            name="category"
-            placeholder="Category"
-            value={formData.category}
-            onChange={handleChange}
-            className="input input-bordered w-full"
-            required
-          />
-
-          <textarea
-            name="description"
-            placeholder="Description"
-            value={formData.description}
-            onChange={handleChange}
-            className="textarea textarea-bordered w-full"
-            required
-          />
-
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              name="isFeatured"
-              checked={formData.isFeatured}
-              onChange={handleChange}
-              className="checkbox"
-            />
-            <span>Mark as Featured</span>
-          </label>
-
-          <button
-            type="submit"
-            className="btn text-black bg-[#fdc700] hover:bg-amber-200 w-full"
-          >
-            Add Course
-          </button>
-        </form>
+            <div className="pt-12">
+               <button type="submit" disabled={loading} className="w-full py-6 bg-black text-white rounded-full font-black text-[10px] uppercase tracking-[0.4em] hover:bg-neutral-800 transition-all shadow-2xl shadow-black/10 flex items-center justify-center gap-4">
+                  {loading ? <ButtonLoader /> : <>Launch Publication <HiArrowLeft className="rotate-180" /></>}
+               </button>
+            </div>
+         </form>
       </div>
     </div>
   );

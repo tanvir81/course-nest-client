@@ -1,93 +1,66 @@
 import React from "react";
+import SectionHeader from "./Shared/SectionHeader";
 
 const WhyChooseUs = () => {
+  const features = [
+    {
+      title: "Expert Mentorship",
+      description:
+        "Learn from seasoned professionals with real-world experience. Get personalized feedback and career guidance tailored to your creative path.",
+    },
+    {
+      title: "Hands-On Learning",
+      description:
+        "Build real projects that showcase your skills. Apply concepts through interactive assignments that strengthen your portfolio.",
+    },
+    {
+      title: "Career-Focused Tracks",
+      description:
+        "Choose learning paths aligned with your goals. Master frontend, backend, or full-stack development with industry-backed certifications.",
+    },
+    {
+      title: "Real-World Projects",
+      description:
+        "Build full-stack apps that mirror industry standards. Work with real APIs, databases, and professional deployment tools.",
+    },
+    {
+      title: "Flexible Learning",
+      description:
+        "Learn at your own pace with lifetime access. Access content anytime, from any device, balancing learning with your personal schedule.",
+    },
+    {
+      title: "Full Career Support",
+      description:
+        "Get resume tips and interview prep from industry pros. Earn certificates to boost your credibility and join our exclusive hiring network.",
+    },
+  ];
+
   return (
-    <section className="relative py-16 bg-base-100 text-base-content">
-      <div className="absolute inset-0"></div>
+    <section className="section-padding bg-white">
+      <div className="max-w-7xl mx-auto">
+        <SectionHeader
+          title="Why Choose"
+          highlight="CourseNest"
+          subtitle="We provide a high-end learning infrastructure designed for the next generation of digital creatives."
+        />
 
-      {/* Content */}
-      <div className="relative z-10 px-4 md:px-10">
-        <h2 className="text-4xl font-bold text-center mb-10" data-aos="fade-up">
-          Why Choose <span className="text-yellow-500">CourseNest</span>
-        </h2>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 justify-center">
-          {[
-            {
-              title: "Expert Mentorship",
-              points: [
-                "Learn from seasoned professionals with real-world experience",
-                "Get personalized feedback and career guidance",
-                "Access mentors who care about your growth",
-              ],
-              aos: "fade-right",
-              delay: 100,
-            },
-            {
-              title: "Hands-On Learning",
-              points: [
-                "Build real projects that showcase your skills",
-                "Apply concepts through interactive assignments",
-                "Strengthen your portfolio with practical work",
-              ],
-              aos: "fade-up",
-              delay: 200,
-            },
-            {
-              title: "Career-Focused Tracks",
-              points: [
-                "Choose learning paths aligned with your goals",
-                "Master frontend, backend, or full-stack development",
-                "Earn certifications that boost your job prospects",
-              ],
-              aos: "fade-left",
-              delay: 300,
-            },
-            {
-              title: "Real-World Projects",
-              points: [
-                "Build full-stack apps that mirror industry standards",
-                "Work with real APIs, databases, and deployment tools",
-                "Showcase your work in a professional portfolio",
-              ],
-              aos: "fade-up",
-              delay: 200,
-            },
-            {
-              title: "Flexible Learning",
-              points: [
-                "Learn at your own pace with lifetime access",
-                "Access content anytime, from any device",
-                "Balance learning with your personal schedule",
-              ],
-              aos: "fade-left",
-              delay: 300,
-            },
-            {
-              title: "Career Support",
-              points: [
-                "Get resume tips and interview prep from industry pros",
-                "Earn certificates to boost your credibility",
-                "Join a network of learners and hiring partners",
-              ],
-              aos: "fade-up",
-              delay: 400,
-            },
-          ].map((card, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          {features.map((feature, index) => (
             <div
               key={index}
-              className="card bg-base-200 text-base-content shadow-md rounded-lg"
-              data-aos={card.aos}
-              data-aos-delay={card.delay}
+              className="p-10 border border-black/5 rounded-[2.5rem] bg-neutral-50/30 hover:bg-black hover:text-white transition-all duration-500 group"
+              data-aos="fade-up"
+              data-aos-delay={index * 100}
             >
-              <div className="card-body">
-                <h3 className="text-xl font-bold mb-4">{card.title}</h3>
-                <ul className="flex flex-col gap-2 text-sm">
-                  {card.points.map((point, i) => (
-                    <li key={i}>{point}</li>
-                  ))}
-                </ul>
+              <div className="text-4xl font-black mb-6 opacity-10 group-hover:opacity-20 transition-opacity">
+                0{index + 1}
               </div>
+              <h3 className="text-2xl font-black mb-4 tracking-tight">
+                {feature.title}
+              </h3>
+              <p className="opacity-60 font-medium leading-relaxed group-hover:opacity-80">
+                {feature.description}
+              </p>
             </div>
           ))}
         </div>

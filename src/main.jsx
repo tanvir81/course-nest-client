@@ -14,27 +14,46 @@ import Login from "./components/Auth/Login.jsx";
 import Register from "./components/Auth/Register.jsx";
 import PrivateRoute from "./components/Route/PrivateRoute.jsx";
 import UpdateCourse from "./components/Courses/UpdateCourse.jsx";
+import CoursePlayer from "./components/Courses/CoursePlayer.jsx";
 import RootLayout from "./Layout/RootLayout.jsx";
 import NotFound from "./components/NotFound.jsx";
+import Profile from "./components/Auth/Profile.jsx";
+import AboutUs from "./pages/AboutUs.jsx";
+import ContactUs from "./pages/ContactUs.jsx";
+import ErrorPage from "./pages/ErrorPage.jsx";
+import GlobalLoader from "./components/Shared/GlobalLoader.jsx";
+const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <RootLayout />,
+    errorElement: <ErrorPage />,
     children: [
       { index: true, element: <Home /> },
       { path: "courses", element: <AllCourses /> },
       {
         path: "courses/:id",
         loader: async ({ params }) => {
-          const res = await fetch(`http://localhost:3000/courses/${params.id}`);
-          return res.json();
+          if (!params.id || params.id === "undefined") {
+            throw new Response("Invalid Course Identifier", { status: 400 });
+          }
+          try {
+             const res = await fetch(`${API_URL}/courses/${params.id}`);
+             if (!res.ok) throw new Response("Course Not Found", { status: 404 });
+             const data = await res.json();
+             return data;
+          } catch (err) {
+             if (err instanceof Response) throw err;
+             throw new Response("Failure to Resolve Data", { status: 500 });
+          }
         },
         element: (
           <PrivateRoute>
             <CourseDetails />
           </PrivateRoute>
         ),
+        hydrateFallbackElement: <GlobalLoader message="Loading Details..." />,
       },
       {
         path: "add-course",
@@ -60,19 +79,45 @@ const router = createBrowserRouter([
           </PrivateRoute>
         ),
       },
+      { path: "enrolled", element: <PrivateRoute><MyEnrolledCourses /></PrivateRoute> },
+      { path: "about", element: <AboutUs /> },
+      { path: "contact", element: <ContactUs /> },
+
       {
-        path: "enrolled",
+        path: "profile",
         element: (
           <PrivateRoute>
-            <MyEnrolledCourses />
+            <Profile />
           </PrivateRoute>
         ),
       },
-
       { path: "login", element: <Login /> },
       { path: "register", element: <Register /> },
       { path: "*", element: <NotFound /> },
     ],
+  },
+  {
+    path: "courses/:id/learn",
+    loader: async ({ params }) => {
+      if (!params.id || params.id === "undefined") {
+        throw new Response("Learning Module Not Specified", { status: 400 });
+      }
+      try {
+         const res = await fetch(`${API_URL}/courses/${params.id}`);
+         if (!res.ok) throw new Response("Unit Access Denied", { status: 404 });
+         const data = await res.json();
+         return data;
+      } catch (err) {
+         if (err instanceof Response) throw err;
+         throw new Response("Learning Matrix Offline", { status: 500 });
+      }
+    },
+    element: (
+      <PrivateRoute>
+        <CoursePlayer />
+      </PrivateRoute>
+    ),
+    hydrateFallbackElement: <GlobalLoader message="Initializing Learning Environment..." />,
   },
 ]);
 

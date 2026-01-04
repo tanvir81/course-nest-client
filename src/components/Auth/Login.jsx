@@ -2,137 +2,148 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "../../contexts/AuthProvider";
 import { useNavigate, useLocation, Link } from "react-router";
 import { toast } from "react-hot-toast";
-import AOS from "aos";
-import "aos/dist/aos.css";
+import { HiMail, HiLockClosed, HiArrowLeft } from "react-icons/hi";
+import { FaGoogle } from "react-icons/fa";
+import ButtonLoader from "../Shared/ButtonLoader";
 
 const Login = () => {
   const { login, googleLogin } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const from = location.state?.from?.pathname || "/";
 
-  useEffect(() => {
-    AOS.init({ duration: 800, once: true });
-  }, []);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       await login(email, password);
-      toast.success("Login successful!");
+      toast.success("Welcome back! Happy learning.");
       navigate(from, { replace: true });
     } catch (err) {
       toast.error("Login failed: " + err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleGoogle = async () => {
+    setLoading(true);
     try {
       await googleLogin();
       toast.success("Logged in with Google!");
       navigate(from, { replace: true });
     } catch (err) {
       toast.error("Google login failed: " + err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-base-100 text-base-content relative overflow-hidden">
-      {/* Animated Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-yellow-100 to-yellow-300 dark:from-neutral dark:to-base-300 animate-[pulse_6s_ease-in-out_infinite]" />
+    <div className="min-h-screen grid lg:grid-cols-2 bg-white antialiased font-['Outfit']">
+      {/* Left Side: Visual */}
+      <div className="hidden lg:flex section-banner items-center justify-center p-20">
+        <div className="absolute inset-0 bg-black/60"></div>
+        <div className="relative z-10 text-center space-y-10">
+           <h2 className="text-6xl font-black text-white leading-[1.1] tracking-tighter">Your Journey <br/><span className="text-[#8B5CF6] italic">Starts Here.</span></h2>
+           <p className="text-neutral-400 text-xl font-medium max-w-md mx-auto leading-relaxed">Access the world's best courses and learn from industry experts at your own pace with elegant precision.</p>
+           <div className="w-80 h-80 mx-auto border border-white/10 rounded-[3rem] p-8 flex items-center justify-center group hover:border-white transition-all duration-700">
+              <div className="w-full h-full border border-white/5 rounded-[2rem] flex items-center justify-center text-8xl font-black text-white group-hover:bg-white group-hover:text-black transition-all duration-700">
+                CN
+              </div>
+           </div>
+        </div>
+      </div>
 
-      {/* Form Container */}
-      <div
-        className="relative z-10 max-w-md w-full bg-base-200 text-base-content shadow-md rounded-xl p-6 space-y-6"
-        data-aos="fade-up"
-      >
-        <h1 className="text-2xl font-bold text-center">Welcome Back</h1>
+      {/* Right Side: Form */}
+      <div className="flex items-center justify-center p-8 md:p-20 relative">
+        <Link to="/" className="absolute top-10 left-10 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-black transition-all">
+           <HiArrowLeft className="text-lg" /> Back to Home
+        </Link>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="max-w-md w-full space-y-12">
           <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
-            <input
-              type="email"
-              placeholder="you@example.com"
-              className="input input-bordered w-full"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
+            <h1 className="text-5xl font-black tracking-tighter mb-4 text-neutral-900 leading-tight">Welcome <br/> Back</h1>
+            <p className="text-neutral-500 font-medium text-lg leading-relaxed">Enter your credentials to access your creative dashboard.</p>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">Password</label>
-            <input
-              type="password"
-              placeholder="Enter Your Password"
-              className="input input-bordered w-full"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
+          <form onSubmit={handleSubmit} className="space-y-8">
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase font-black tracking-widest text-neutral-400 ml-1">Email Address</label>
+                <div className="relative">
+                  <HiMail className="absolute left-6 top-1/2 -translate-y-1/2 text-neutral-400 text-xl" />
+                  <input
+                    type="email"
+                    placeholder="email@example.com"
+                    className="w-full pl-14 h-16 rounded-[1.5rem] bg-neutral-50 border border-black/5 focus:border-black focus:bg-white focus:ring-0 outline-none transition-all font-medium"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
 
-          <div className="text-right">
-            <span className="text-sm opacity-70 cursor-pointer hover:underline">
-              Forgot Password?
-            </span>
+              <div className="space-y-2">
+                <label className="text-[10px] uppercase font-black tracking-widest text-neutral-400 ml-1">Password</label>
+                <div className="relative">
+                  <HiLockClosed className="absolute left-6 top-1/2 -translate-y-1/2 text-neutral-400 text-xl" />
+                  <input
+                    type="password"
+                    placeholder="••••••••"
+                    className="w-full pl-14 h-16 rounded-[1.5rem] bg-neutral-50 border border-black/5 focus:border-black focus:bg-white focus:ring-0 outline-none transition-all font-medium"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center text-sm">
+               <label className="flex items-center gap-3 cursor-pointer group">
+                  <input type="checkbox" className="w-5 h-5 rounded-md border-neutral-300 text-black focus:ring-black cursor-pointer" />
+                  <span className="text-neutral-500 font-bold group-hover:text-black transition-colors">Remember me</span>
+               </label>
+               <span className="text-black font-black hover:underline cursor-pointer tracking-tight">Forgot Password?</span>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full h-16 bg-black text-white rounded-[1.5rem] font-black text-lg hover:bg-neutral-800 transition-all duration-300 shadow-2xl shadow-black/10 flex items-center justify-center"
+            >
+              {loading ? <ButtonLoader /> : "Sign In →"}
+            </button>
+          </form>
+
+          <div className="relative py-4">
+             <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-black/5"></div></div>
+             <div className="relative flex justify-center text-[10px] uppercase font-black tracking-widest text-neutral-400 bg-white px-4">OR CONTINUE WITH</div>
           </div>
 
           <button
-            type="submit"
-            className="btn bg-yellow-400 hover:bg-yellow-500 text-black w-full"
+            onClick={handleGoogle}
+            disabled={loading}
+            className="w-full h-16 rounded-[1.5rem] border border-black/10 flex items-center justify-center gap-4 font-bold hover:bg-neutral-50 transition-all duration-300"
           >
-            Login
+            <FaGoogle className="text-xl" />
+            Sign in with Google
           </button>
-        </form>
 
-        <div className="divider">or</div>
-
-        <button
-          onClick={handleGoogle}
-          className="btn w-full mt-4 bg-base-100 text-base-content border border-base-content"
-        >
-          <svg
-            aria-label="Google logo"
-            width="16"
-            height="16"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 512 512"
-            className="mr-2"
-          >
-            <g>
-              <path d="m0 0H512V512H0" fill="#fff"></path>
-              <path
-                fill="#34a853"
-                d="M153 292c30 82 118 95 171 60h62v48A192 192 0 0190 341"
-              ></path>
-              <path
-                fill="#4285f4"
-                d="m386 400a140 175 0 0053-179H260v74h102q-7 37-38 57"
-              ></path>
-              <path
-                fill="#fbbc02"
-                d="m90 341a208 200 0 010-171l63 49q-12 37 0 73"
-              ></path>
-              <path
-                fill="#ea4335"
-                d="m153 219c22-69 116-109 179-50l55-54c-78-75-230-72-297 55"
-              ></path>
-            </g>
-          </svg>
-          Login with Google
-        </button>
-
-        <p className="text-sm text-center mt-4">
-          Don't have an account?{" "}
-          <Link
-            to="/register"
-            className="link text-yellow-400 hover:text-yellow-600"
-          >
-            Register
-          </Link>
-        </p>
+          <p className="text-center font-bold text-neutral-500">
+            New here?{" "}
+            <Link
+              to="/register"
+              className="text-black font-black hover:underline"
+            >
+              Start for free
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

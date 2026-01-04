@@ -3,20 +3,20 @@ import { useAuth } from "../../contexts/AuthProvider";
 import { useNavigate, Link } from "react-router";
 import { updateProfile } from "firebase/auth";
 import toast from "react-hot-toast";
-import AOS from "aos";
-import "aos/dist/aos.css";
+import axios from "axios";
+import { HiUser, HiMail, HiLockClosed, HiPhotograph, HiArrowLeft, HiCheckCircle, HiUpload } from "react-icons/hi";
+import { FaGoogle } from "react-icons/fa";
+import ButtonLoader from "../Shared/ButtonLoader";
+import { auth } from "../../firebase/firebase.config";
 
 const Register = () => {
-  const { register, googleLogin } = useAuth();
+  const { register, googleLogin, setUser } = useAuth();
   const [name, setName] = useState("");
   const [photo, setPhoto] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    AOS.init({ duration: 800, once: true });
-  }, []);
 
   const validatePassword = (pwd) => {
     return /[A-Z]/.test(pwd) && /[a-z]/.test(pwd) && pwd.length >= 6;
@@ -26,149 +26,217 @@ const Register = () => {
     e.preventDefault();
     if (!validatePassword(password)) {
       toast.error(
-        "Password must include uppercase, lowercase, and be at least 6 characters."
+        "Password needs an uppercase, a lowercase, and 6+ characters."
       );
       return;
     }
+    setLoading(true);
     try {
       const userCredential = await register(email, password);
       const currentUser = userCredential.user;
 
       await updateProfile(currentUser, {
         displayName: name || "Anonymous",
-        photoURL: photo || "https://i.postimg.cc/3x3QzSGq/profile.png",
+        photoURL: photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(name || "User")}&background=random`,
       });
 
       await currentUser.reload();
-
-      toast.success("Registration successful!");
+      
+      // Force immediate state sync with the new profile data to prevent the auth observer's "nano-second glitch"
+      const finalUser = {
+        ...auth.currentUser,
+        displayName: name || "Anonymous",
+        photoURL: photo || `https://ui-avatars.com/api/?name=${encodeURIComponent(name || "User")}&background=random`
+      };
+      
+      setUser(finalUser); 
+      toast.success("Account created successfully!");
       navigate("/");
     } catch (err) {
       toast.error("Registration failed: " + err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleGoogle = async () => {
+    setLoading(true);
     try {
       await googleLogin();
-      toast.success("Signed in with Google!");
+      toast.success("Welcome aboard!");
       navigate("/");
     } catch (err) {
       toast.error("Google sign-in failed: " + err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-base-100 text-base-content relative overflow-hidden">
-      {/* Animated Background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-yellow-100 to-yellow-300 dark:from-neutral dark:to-base-300 animate-[pulse_6s_ease-in-out_infinite]" />
+    <div className="min-h-screen grid lg:grid-cols-2 bg-white antialiased font-['Outfit']">
+      {/* Left Side: Visual */}
+      <div className="hidden lg:flex section-banner items-center justify-center p-20">
+        <div className="absolute inset-0 bg-black/60"></div>
+        <div className="relative z-10 text-center space-y-10">
+           <h2 className="text-6xl font-black text-white leading-[1.1] tracking-tighter">Elevate Your <br/><span className="text-[#8B5CF6] italic">Potential.</span></h2>
+           <p className="text-neutral-400 text-xl font-medium max-w-md mx-auto leading-relaxed">Join the most active community of elite learners and educators in the digital age.</p>
+           <div className="w-80 h-80 mx-auto border border-white/10 rounded-[3rem] p-8 flex items-center justify-center group hover:border-white transition-all duration-700">
+              <div className="w-full h-full border border-white/5 rounded-[2rem] flex items-center justify-center text-8xl font-black text-white group-hover:bg-white group-hover:text-black transition-all duration-700">
+                CN
+              </div>
+           </div>
+        </div>
+      </div>
 
-      {/* Form Container */}
-      <div
-        className="relative z-10 max-w-md w-full bg-base-200 text-base-content shadow-md rounded-xl p-6 space-y-6"
-        data-aos="fade-up"
-      >
-        <h1 className="text-2xl font-bold text-center">Create an Account</h1>
+      {/* Right Side: Form */}
+      <div className="flex items-center justify-center p-8 md:p-20 relative">
+        <Link to="/" className="absolute top-10 left-10 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-neutral-400 hover:text-black transition-all">
+           <HiArrowLeft className="text-lg" /> Back to Home
+        </Link>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="max-w-md w-full space-y-10">
           <div>
-            <label className="block text-sm font-medium mb-1">Name</label>
-            <input
-              type="text"
-              placeholder="Your name"
-              className="input input-bordered w-full"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
+            <h1 className="text-5xl font-black tracking-tighter mb-4 text-neutral-900 leading-tight">Create <br/> Account</h1>
+            <p className="text-neutral-500 font-medium text-lg leading-relaxed">Begin your creative journey with us today.</p>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">Photo URL</label>
-            <input
-              type="text"
-              placeholder="Profile photo URL"
-              className="input input-bordered w-full"
-              value={photo}
-              onChange={(e) => setPhoto(e.target.value)}
-            />
-          </div>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+               <div className="space-y-2">
+                  <label className="text-[10px] uppercase font-black tracking-widest text-neutral-400 ml-1">Full Name</label>
+                  <div className="relative">
+                     <HiUser className="absolute left-6 top-1/2 -translate-y-1/2 text-neutral-400 text-xl" />
+                     <input
+                       type="text"
+                       placeholder="Identity"
+                       className="w-full pl-14 h-16 rounded-[1.5rem] bg-neutral-50 border border-black/5 focus:border-black focus:bg-white focus:ring-0 outline-none transition-all font-medium"
+                       value={name}
+                       onChange={(e) => setName(e.target.value)}
+                       required
+                     />
+                  </div>
+               </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase font-black tracking-widest text-neutral-400 ml-1">Profile Photo</label>
+                  <div className="relative group">
+                     {photo ? (
+                        <div className="relative w-full h-16 rounded-[1.5rem] overflow-hidden border border-black/5 group-hover:border-black/20 transition-all">
+                           <img src={photo} alt="Preview" className="w-full h-full object-cover" />
+                           <button 
+                              type="button" 
+                              onClick={() => setPhoto("")}
+                              className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all text-white font-bold text-xs uppercase tracking-widest"
+                           >
+                              Remove
+                           </button>
+                        </div>
+                     ) : (
+                        <label className="flex items-center gap-4 w-full h-16 pl-6 rounded-[1.5rem] bg-neutral-50 border border-black/5 cursor-pointer hover:bg-neutral-100 hover:border-black/20 transition-all">
+                           <HiUpload className="text-xl text-neutral-400" />
+                           <span className="text-neutral-400 font-medium select-none">Upload Image</span>
+                           <input
+                              type="file"
+                              accept="image/*"
+                              onChange={async (e) => {
+                                 const file = e.target.files[0];
+                                 if (!file) return;
+                                 setLoading(true);
+                                 try {
+                                    const formData = new FormData();
+                                    formData.append("image", file);
+                                    const res = await axios.post(
+                                       `https://api.imgbb.com/1/upload?key=${import.meta.env.VITE_IMGBB_KEY || "51cf2af8b48eb5d916dd2d4dd09b0a3f"}`,
+                                       formData
+                                    );
+                                    setPhoto(res.data.data.display_url);
+                                    toast.success("Photo uploaded!");
+                                 } catch (err) {
+                                    toast.error("Upload failed");
+                                 } finally {
+                                    setLoading(false);
+                                 }
+                              }}
+                              className="hidden"
+                           />
+                        </label>
+                     )}
+                  </div>
+               </div>
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
-            <input
-              type="email"
-              placeholder="you@example.com"
-              className="input input-bordered w-full"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
+            <div className="space-y-2">
+              <label className="text-[10px] uppercase font-black tracking-widest text-neutral-400 ml-1">Email Address</label>
+              <div className="relative">
+                <HiMail className="absolute left-6 top-1/2 -translate-y-1/2 text-neutral-400 text-xl" />
+                <input
+                  type="email"
+                  placeholder="email@example.com"
+                  className="w-full pl-14 h-16 rounded-[1.5rem] bg-neutral-50 border border-black/5 focus:border-black focus:bg-white focus:ring-0 outline-none transition-all font-medium"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">Password</label>
-            <input
-              type="password"
-              placeholder="Enter Password"
-              className="input input-bordered w-full"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
+            <div className="space-y-2">
+              <label className="text-[10px] uppercase font-black tracking-widest text-neutral-400 ml-1">Secure Password</label>
+              <div className="relative">
+                <HiLockClosed className="absolute left-6 top-1/2 -translate-y-1/2 text-neutral-400 text-xl" />
+                <input
+                  type="password"
+                  placeholder="••••••••"
+                  className="w-full pl-14 h-16 rounded-[1.5rem] bg-neutral-50 border border-black/5 focus:border-black focus:bg-white focus:ring-0 outline-none transition-all font-medium"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Password Validation List */}
+            <div className="grid grid-cols-2 gap-4 p-2">
+               <div className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-widest ${password.length >= 6 ? "text-black" : "opacity-30"}`}>
+                  <HiCheckCircle /> 6+ Characters
+               </div>
+               <div className={`flex items-center gap-2 text-[10px] font-black uppercase tracking-widest ${/[A-Z]/.test(password) ? "text-black" : "opacity-30"}`}>
+                  <HiCheckCircle /> Uppercase
+               </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full h-16 bg-black text-white rounded-[1.5rem] font-black text-lg hover:bg-neutral-800 transition-all duration-300 shadow-2xl shadow-black/10 flex items-center justify-center"
+            >
+              {loading ? <ButtonLoader /> : "Get Started →"}
+            </button>
+          </form>
+
+          <div className="relative py-4">
+             <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-black/5"></div></div>
+             <div className="relative flex justify-center text-[10px] uppercase font-black tracking-widest text-neutral-400 bg-white px-4">OR REGISTER WITH</div>
           </div>
 
           <button
-            type="submit"
-            className="btn bg-yellow-400 hover:bg-yellow-500 text-black w-full"
+            onClick={handleGoogle}
+            disabled={loading}
+            className="w-full h-16 rounded-[1.5rem] border border-black/10 flex items-center justify-center gap-4 font-bold hover:bg-neutral-50 transition-all duration-300"
           >
-            Register
+            <FaGoogle className="text-xl" />
+            Sign up with Google
           </button>
-        </form>
 
-        <div className="divider">or</div>
-
-        <button
-          onClick={handleGoogle}
-          className="btn w-full mt-4 bg-base-100 text-base-content border border-base-content"
-        >
-          <svg
-            aria-label="Google logo"
-            width="16"
-            height="16"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 512 512"
-            className="mr-2"
-          >
-            <g>
-              <path d="m0 0H512V512H0" fill="#fff"></path>
-              <path
-                fill="#34a853"
-                d="M153 292c30 82 118 95 171 60h62v48A192 192 0 0190 341"
-              ></path>
-              <path
-                fill="#4285f4"
-                d="m386 400a140 175 0 0053-179H260v74h102q-7 37-38 57"
-              ></path>
-              <path
-                fill="#fbbc02"
-                d="m90 341a208 200 0 010-171l63 49q-12 37 0 73"
-              ></path>
-              <path
-                fill="#ea4335"
-                d="m153 219c22-69 116-109 179-50l55-54c-78-75-230-72-297 55"
-              ></path>
-            </g>
-          </svg>
-          Register with Google
-        </button>
-
-        <p className="text-sm text-center mt-4">
-          Already have an account?{" "}
-          <Link
-            to="/login"
-            className="link text-yellow-400 hover:text-yellow-600"
-          >
-            Login
-          </Link>
-        </p>
+          <p className="text-center font-bold text-neutral-500">
+            Already a member?{" "}
+            <Link
+              to="/login"
+              className="text-black font-black hover:underline"
+            >
+              Sign in
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

@@ -1,28 +1,35 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { Link } from "react-router";
-import Spinner from "../Spinner";
-import AOS from "aos";
-import "aos/dist/aos.css";
+import useAxios from "../api/useAxios";
+import CourseCard from "../Shared/CourseCard";
+import SectionHeader from "../Shared/SectionHeader";
+import CourseGridSkeleton from "../Shared/CourseGridSkeleton";
+import { HiSearch, HiFilter, HiSortAscending, HiChevronLeft, HiChevronRight } from "react-icons/hi";
 
 const AllCourses = () => {
   const [courses, setCourses] = useState([]);
-  const [categoryInput, setCategoryInput] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [filteredCourses, setFilteredCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const axiosPublic = useAxios();
+  
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("All");
+  const [sort, setSort] = useState("Latest");
+  const [priceRange, setPriceRange] = useState(1000);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const coursesPerPage = 12;
 
   useEffect(() => {
-    AOS.init({ duration: 800, once: true });
     fetchCourses();
   }, []);
 
   const fetchCourses = async () => {
-    setLoading(true);
     try {
-      const url = categoryInput
-        ? `http://localhost:3000/courses?category=${categoryInput}`
-        : "http://localhost:3000/courses";
-      const res = await axios.get(url);
+      setLoading(true);
+      const res = await axiosPublic.get("/courses");
       setCourses(res.data);
+      setFilteredCourses(res.data);
     } catch (err) {
       console.error(err);
     } finally {
@@ -30,101 +37,201 @@ const AllCourses = () => {
     }
   };
 
-  const handleFilter = (e) => {
-    e.preventDefault();
-    fetchCourses();
+  useEffect(() => {
+    let result = [...courses];
+    if (search) {
+      result = result.filter(c => c.title.toLowerCase().includes(search.toLowerCase()));
+    }
+    if (category !== "All") {
+      result = result.filter(c => c.category === category);
+    }
+    result = result.filter(c => c.price <= priceRange);
+    if (sort === "Price Low to High") {
+      result.sort((a, b) => a.price - b.price);
+    } else if (sort === "Price High to Low") {
+      result.sort((a, b) => b.price - a.price);
+    } else if (sort === "Latest") {
+      result.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    }
+    setFilteredCourses(result);
+    setCurrentPage(1); // Reset to first page when filters change
+  }, [search, category, priceRange, sort, courses]);
+
+  const categories = ["All", ...new Set(courses.map(c => c.category))];
+
+  // Pagination calculations
+  const indexOfLastCourse = currentPage * coursesPerPage;
+  const indexOfFirstCourse = indexOfLastCourse - coursesPerPage;
+  const currentCourses = filteredCourses.slice(indexOfFirstCourse, indexOfLastCourse);
+  const totalPages = Math.ceil(filteredCourses.length / coursesPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-base-100 text-base-content relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-yellow-100 to-yellow-300 dark:from-neutral dark:to-base-300 animate-[pulse_6s_ease-in-out_infinite]" />
-
-      <div className="relative z-10 max-w-7xl w-full px-4">
-        {/* Heading */}
-        <div className="text-center mb-10 mt-10" data-aos="fade-down">
-          <h1 className="text-4xl font-bold">All Courses</h1>
+    <div className="min-h-screen bg-white pb-32 font-['Outfit'] antialiased">
+      {/* Banner */}
+      <div className="section-banner py-24 text-center">
+        <div className="absolute inset-0 bg-black/60"></div>
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+           <h1 className="text-5xl md:text-7xl font-black text-white mb-6 tracking-tighter">Explore Our <span className="italic text-[#8B5CF6]">Catalog.</span></h1>
+           <p className="text-neutral-400 text-xl font-medium max-w-2xl mx-auto leading-relaxed">Choose from our curated collection of online creative courses with new additions every month.</p>
         </div>
+      </div>
 
-        {/* Filter Controls */}
-        <form
-          onSubmit={handleFilter}
-          className="mb-8 flex flex-wrap justify-end items-center gap-3"
-          data-aos="fade-down"
-        >
-          <select
-            value={categoryInput}
-            onChange={(e) => setCategoryInput(e.target.value)}
-            className="select select-bordered w-full max-w-xs"
-          >
-            <option value="">All Categories</option>
-            <option value="Design">Design</option>
-            <option value="Development">Development</option>
-            <option value="Frontend">Frontend</option>
-            <option value="Backend">Backend</option>
-            <option value="FullStack">FullStack</option>
-            <option value="DataScience">DataScience</option>
-            <option value="Photography">Photography</option>
-          </select>
+      {/* Control Bar */}
+      <div className="max-w-7xl mx-auto px-6 -mt-10 relative z-10">
+        <div className="bg-white border border-black/5 shadow-2xl rounded-[2.5rem] p-8 md:p-10 flex flex-col lg:flex-row gap-8 items-center">
+           {/* Search */}
+           <div className="relative w-full lg:w-1/3">
+             <HiSearch className="absolute left-6 top-1/2 -translate-y-1/2 text-neutral-400 text-xl" />
+             <input 
+               type="text" 
+               placeholder="Search courses..." 
+               className="w-full h-16 pl-14 pr-6 rounded-[1.5rem] bg-neutral-50 border border-black/5 focus:border-black focus:bg-white focus:ring-0 outline-none transition-all font-medium"
+               value={search}
+               onChange={(e) => setSearch(e.target.value)}
+             />
+           </div>
 
-          <button type="submit" className="btn bg-yellow-400 text-black">
-            Filter
-          </button>
-          <button
-            type="button"
-            className="btn text-black bg-yellow-400 rounded-lg hover:bg-yellow-600 "
-            onClick={() => {
-              setCategoryInput("");
-              fetchCourses();
-            }}
-          >
-            Reset
-          </button>
-        </form>
-
-        {loading ? (
-          <Spinner />
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {courses.map((course, index) => (
-              <div
-                key={course._id}
-                className="card bg-base-200 text-base-content shadow"
-                data-aos="fade-right"
-                data-aos-delay={index * 100}
-              >
-                <figure>
-                  <img
-                    src={course.imageUrl}
-                    alt={course.title}
-                    className="h-48 w-full object-cover"
-                  />
-                </figure>
-                <div className="card-body">
-                  <h2 className="card-title">{course.title}</h2>
-                  <div className="flex flex-wrap gap-2">
-                    <span className="bg-yellow-200 text-gray-800 dark:text-gray-900 text-sm px-2 py-1 rounded-full">
-                      {course.category}
-                    </span>
-                    <span className="bg-green-200 text-gray-800 dark:text-gray-900 text-sm px-2 py-1 rounded-full">
-                      {course.duration}
-                    </span>
-                  </div>
-                  <p className="text-sm mt-2">{course.description}</p>
-                  <div className="card-actions justify-between items-center mt-4">
-                    <span className="font-semibold text-yellow-600">
-                      ${course.price}
-                    </span>
-                    <Link
-                      to={`/courses/${course._id}`}
-                      className="btn text-black bg-yellow-400 rounded-lg hover:bg-yellow-600 "
-                    >
-                      View Details
-                    </Link>
-                  </div>
-                </div>
+           {/* Filter Group */}
+           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full lg:flex-1">
+              {/* Category */}
+              <div className="space-y-2">
+                 <label className="text-[10px] uppercase font-black tracking-widest text-neutral-400 ml-1 flex items-center gap-2">
+                   <HiFilter /> Category
+                 </label>
+                 <select 
+                    className="w-full h-16 px-6 rounded-[1.5rem] bg-neutral-50 border border-black/5 focus:border-black focus:bg-white focus:ring-0 outline-none transition-all font-bold appearance-none cursor-pointer"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                 >
+                    {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
+                 </select>
               </div>
-            ))}
-          </div>
+
+              {/* Price Range */}
+              <div className="space-y-2">
+                 <label className="text-[10px] uppercase font-black tracking-widest text-neutral-400 ml-1">Max Price: ${priceRange}</label>
+                 <div className="h-16 flex items-center px-4 bg-neutral-50 rounded-[1.5rem] border border-black/5">
+                   <input 
+                    type="range" min="0" max="1000" 
+                    className="w-full accent-black h-1"
+                    value={priceRange}
+                    onChange={(e) => setPriceRange(Number(e.target.value))}
+                   />
+                 </div>
+              </div>
+
+              {/* Sort */}
+              <div className="space-y-2">
+                 <label className="text-[10px] uppercase font-black tracking-widest text-neutral-400 ml-1 flex items-center gap-2">
+                   <HiSortAscending /> Sort By
+                 </label>
+                 <select 
+                    className="w-full h-16 px-6 rounded-[1.5rem] bg-neutral-50 border border-black/5 focus:border-black focus:bg-white focus:ring-0 outline-none transition-all font-bold appearance-none cursor-pointer"
+                    value={sort}
+                    onChange={(e) => setSort(e.target.value)}
+                 >
+                    <option value="Latest">Latest Additions</option>
+                    <option value="Price Low to High">Low to High</option>
+                    <option value="Price High to Low">High to Low</option>
+                 </select>
+              </div>
+           </div>
+        </div>
+      </div>
+
+      {/* Grid */}
+      <div className="max-w-7xl mx-auto px-6 mt-24">
+        {loading ? (
+          <CourseGridSkeleton />
+        ) : (
+          <>
+            <div className="mb-10 flex justify-between items-end px-2 border-b border-black/5 pb-6">
+               <h2 className="font-black text-3xl tracking-tighter">Showing <span className="text-neutral-400">{filteredCourses.length}</span> Results</h2>
+               <button className="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-400 hover:text-black transition-colors" onClick={() => {
+                 setSearch(""); setCategory("All"); setPriceRange(1000); setSort("Latest");
+               }}>Reset All Filters</button>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10">
+              {currentCourses.map((course, idx) => (
+                <div key={course._id} data-aos="fade-up" data-aos-delay={idx * 50}>
+                  <CourseCard course={course} />
+                </div>
+              ))}
+            </div>
+
+            {filteredCourses.length === 0 && (
+              <div className="text-center py-32 bg-neutral-50 rounded-[3rem] border border-black/5 mt-10">
+                <div className="text-8xl mb-8 opacity-20 group-hover:scale-110 transition-transform duration-700">🔍</div>
+                <h3 className="text-3xl font-black tracking-tighter">No courses found.</h3>
+                <p className="text-neutral-500 font-medium mt-4 max-w-md mx-auto">Try adjusting your filters or search terms to find what you're looking for.</p>
+                <button 
+                  onClick={() => { setSearch(""); setCategory("All"); setPriceRange(1000); }}
+                  className="mt-10 px-10 py-4 bg-black text-white rounded-full font-black text-xs uppercase tracking-widest hover:bg-neutral-800 transition-all"
+                >
+                  Reset Pursuit
+                </button>
+              </div>
+            )}
+
+            {/* Pagination Controls */}
+            {filteredCourses.length > coursesPerPage && (
+              <div className="mt-20 flex justify-center items-center gap-4">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="w-12 h-12 rounded-full border border-black/10 flex items-center justify-center hover:bg-black hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-black"
+                >
+                  <HiChevronLeft className="text-xl" />
+                </button>
+
+                <div className="flex gap-2">
+                  {[...Array(totalPages)].map((_, index) => {
+                    const pageNumber = index + 1;
+                    // Show first page, last page, current page, and pages around current
+                    if (
+                      pageNumber === 1 ||
+                      pageNumber === totalPages ||
+                      (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
+                    ) {
+                      return (
+                        <button
+                          key={pageNumber}
+                          onClick={() => handlePageChange(pageNumber)}
+                          className={`w-12 h-12 rounded-full font-black text-sm transition-all ${
+                            currentPage === pageNumber
+                              ? "bg-black text-white"
+                              : "border border-black/10 hover:bg-neutral-50"
+                          }`}
+                        >
+                          {pageNumber}
+                        </button>
+                      );
+                    } else if (
+                      pageNumber === currentPage - 2 ||
+                      pageNumber === currentPage + 2
+                    ) {
+                      return <span key={pageNumber} className="w-12 h-12 flex items-center justify-center text-neutral-400">...</span>;
+                    }
+                    return null;
+                  })}
+                </div>
+
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="w-12 h-12 rounded-full border border-black/10 flex items-center justify-center hover:bg-black hover:text-white transition-all disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-black"
+                >
+                  <HiChevronRight className="text-xl" />
+                </button>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

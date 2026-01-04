@@ -1,75 +1,110 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import useAxios from "../api/useAxios";
+import CourseCard from "./Shared/CourseCard";
+import SectionHeader from "./Shared/SectionHeader";
+import CourseGridSkeleton from "./Shared/CourseGridSkeleton";
 
 const PopularCourses = () => {
-  const [featuredCourses, setFeaturedCourses] = useState([]);
+  const [popularCourses, setPopularCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const axiosPublic = useAxios();
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3000/courses")
-      .then((res) => {
-        const featured = res.data.filter((c) => c.isFeatured).slice(0, 6);
-        setFeaturedCourses(featured);
-      })
-      .catch((err) => console.error(err));
+    fetchPopularCourses();
   }, []);
 
+  const fetchPopularCourses = async () => {
+    try {
+      setLoading(true);
+      // Fetch all courses
+      const coursesRes = await axiosPublic.get("/courses");
+      const courses = coursesRes.data;
+
+      // Fetch ratings for each course
+      const coursesWithRatings = await Promise.all(
+        courses.map(async (course) => {
+          try {
+            const ratingRes = await axiosPublic.get(
+              `/courses/${course._id}/average-rating`
+            );
+            return {
+              ...course,
+              averageRating: ratingRes.data.average || 0,
+            };
+          } catch (err) {
+            return {
+              ...course,
+              averageRating: 0,
+            };
+          }
+        })
+      );
+
+      // Sort all courses by rating
+      const sortedByRating = coursesWithRatings.sort((a, b) => b.averageRating - a.averageRating);
+
+      // Get unique categories
+      const categories = [...new Set(courses.map(c => c.category))];
+
+      // Select at least 1 course from each category (highest rated in that category)
+      const selectedCourses = [];
+      const usedCourseIds = new Set();
+
+      categories.forEach(category => {
+        const categoryTopCourse = sortedByRating.find(
+          course => course.category === category && !usedCourseIds.has(course._id)
+        );
+        if (categoryTopCourse) {
+          selectedCourses.push(categoryTopCourse);
+          usedCourseIds.add(categoryTopCourse._id);
+        }
+      });
+
+      // Fill remaining slots with highest-rated courses (up to 8 total)
+      const remainingSlots = 8 - selectedCourses.length;
+      const additionalCourses = sortedByRating
+        .filter(course => !usedCourseIds.has(course._id))
+        .slice(0, remainingSlots);
+
+      const finalCourses = [...selectedCourses, ...additionalCourses];
+
+      setPopularCourses(finalCourses);
+      setLoading(false);
+    } catch (err) {
+      console.error(err);
+      setLoading(false);
+    }
+  };
+
   return (
-    <section className="px-4 md:px-10 py-6 bg-base-100 text-base-content">
-      <h2 className="text-4xl font-bold text-center mb-10" data-aos="fade-up">
-        Popular <span className="text-yellow-500">Courses</span>
-      </h2>
+    <section className="section-padding bg-white">
+      <div className="max-w-7xl mx-auto">
+        <SectionHeader 
+          title="Most Popular" 
+          highlight="Courses" 
+          subtitle="Discover our most trending and high-impact courses, curated for your career success."
+        />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {featuredCourses.map((course, index) => (
-          <div
-            key={course._id}
-            className="flex flex-col sm:flex-row bg-base-200 text-base-content shadow rounded-lg overflow-hidden sm:h-72 cursor-pointer"
-            data-aos="fade-up"
-            data-aos-delay={index * 100}
-          >
-            {/* Image */}
-            <div className="w-full sm:w-1/2 h-48 sm:h-full overflow-hidden">
-              <img
-                src={course.imageUrl}
-                alt={course.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-
-            {/* Content */}
-            <div className="w-full sm:w-1/2 p-4 flex flex-col justify-between">
-              <div>
-                <h3 className="text-lg font-bold">{course.title}</h3>
-
-                <div className="flex flex-wrap gap-2 mt-2">
-                  <span className="bg-yellow-200 text-gray-800 dark:text-gray-900 text-xs px-2 py-1 rounded-full">
-                    {course.category}
-                  </span>
-                  <span className="bg-green-200 text-gray-800 dark:text-gray-900 text-xs px-2 py-1 rounded-full">
-                    {course.duration}
-                  </span>
-                </div>
-
-                <p className="text-sm mt-2 line-clamp-3">
-                  {course.description || "No description available."}
-                </p>
+        {loading ? (
+          <CourseGridSkeleton />
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+            {popularCourses.map((course, index) => (
+              <div 
+                key={course._id} 
+                data-aos="fade-up" 
+                data-aos-delay={index * 100}
+                className="h-full"
+              >
+                <CourseCard course={course} />
               </div>
-
-              <div className="flex justify-between items-center mt-4">
-                <span className="font-semibold text-yellow-600">
-                  ${course.price}
-                </span>
-                <a
-                  href={`/courses/${course._id}`}
-                  className="btn text-black  bg-yellow-400 rounded-lg hover:bg-yellow-600"
-                >
-                  View Details
-                </a>
-              </div>
-            </div>
+            ))}
           </div>
-        ))}
+        )}
+        
+        {popularCourses.length === 0 && !loading && (
+          <p className="text-center opacity-30 py-20 font-bold uppercase tracking-widest text-xs">No popular courses available at the moment.</p>
+        )}
       </div>
     </section>
   );
