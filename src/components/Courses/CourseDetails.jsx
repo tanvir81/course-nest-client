@@ -83,8 +83,8 @@ const CourseDetails = () => {
     };
 
     try {
-      const res = await axios.post(
-        "http://localhost:3000/enrollments",
+      const res = await axiosSecure.post(
+        "/enrollments",
         enrollment
       );
       if (res.data?.insertedId) {
