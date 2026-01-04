@@ -30,8 +30,6 @@ const router = createBrowserRouter([
     element: <RootLayout />,
     errorElement: <ErrorPage />,
     children: [
-      { index: true, element: <Home /> },
-      { path: "courses", element: <AllCourses /> },
       {
         path: "courses/:id",
         loader: async ({ params }) => {
@@ -51,6 +49,8 @@ const router = createBrowserRouter([
         element: <CourseDetails />,
         hydrateFallbackElement: <GlobalLoader message="Loading Details..." />,
       },
+      { index: true, element: <Home /> },
+      { path: "courses", element: <AllCourses /> },
       {
         path: "add-course",
         element: (
