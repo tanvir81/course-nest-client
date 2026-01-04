@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import useAxios from "../api/useAxios";
+import useAxios from "../../api/useAxios";
 import CourseCard from "../Shared/CourseCard";
 import SectionHeader from "../Shared/SectionHeader";
 import CourseGridSkeleton from "../Shared/CourseGridSkeleton";
