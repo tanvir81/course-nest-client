@@ -37,7 +37,7 @@ It includes:
 - Secure authentication
 - Modern animations and micro-interactions
 
-**Live URL:** [https://](https://course-nest-6d3e1.web.app/)
+**Live URL:** [https://course-nest-6d3e1.web.app/](https://course-nest-6d3e1.web.app/)
 
 ---
 
