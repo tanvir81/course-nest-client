@@ -1,4 +1,5 @@
-# CourseNest  
+# CourseNest
+
 A modern online learning platform for developers and creators — featuring smooth UI, responsive design, and a powerful course management system.
 
 ---
@@ -20,21 +21,23 @@ A modern online learning platform for developers and creators — featuring smoo
 ---
 
 ## About the Project
+
 CourseNest is a premium online learning platform designed to help instructors share knowledge and students learn efficiently. The project focuses on creating a smooth UI/UX experience with robust authentication, course handling, reviews, and dashboards for both learners and instructors.
 
 ---
 
 ## Project Overview
+
 CourseNest provides a clean and responsive interface where users can browse courses, enroll, and interact with instructors.  
 It includes:
 
-- Dynamic dashboards  
-- Role-based content rendering  
-- Inline reviews & ratings  
-- Secure authentication  
-- Modern animations and micro-interactions  
+- Dynamic dashboards
+- Role-based content rendering
+- Inline reviews & ratings
+- Secure authentication
+- Modern animations and micro-interactions
 
-**Live URL:** https://course-nest-6d3e1.web.app/
+**Live URL:** [https://](https://course-nest-6d3e1.web.app/)
 
 ---
 
@@ -67,7 +70,7 @@ It includes:
 
 **Frontend:** React (Vite) · Tailwind CSS · DaisyUI · AOS · Framer Motion  
 **Backend:** Express.js · MongoDB · JWT  
-**Tools:** Firebase Auth · Axios · imgbb · React Router  
+**Tools:** Firebase Auth · Axios · imgbb · React Router
 
 ---
 
@@ -90,8 +93,8 @@ It includes:
   "swiper": "^12.0.3",
   "tailwindcss": "^4.1.17"
 }
-
 ```
+
 ## Installation️ & Setup
 
 ```bash
@@ -114,6 +117,7 @@ VITE_IMGBB_KEY=your_imgbb_key
 VITE_BASE_URL=your_backend_url
 
 ```
+
 3. Run the application:
 
 ```bash
@@ -121,6 +125,7 @@ npm run dev
 ```
 
 ## Folder Structure
+
 ```
 CourseNest/
 │
@@ -135,8 +140,9 @@ CourseNest/
 ├── public/
 └── package.json
 ```
+
 4. Contributions
-   
+
 | Name                | Role                | Contributions                       |
 | ------------------- | ------------------- | ----------------------------------- |
 | Tanvir Hussain Khan | Fullstack Developer | Entire project design & development |
@@ -146,4 +152,3 @@ CourseNest/
 [![Live Site](https://img.shields.io/badge/🌐_Live_Site-000?style=for-the-badge)](https://course-nest-6d3e1.web.app)
 [![Email](https://img.shields.io/badge/📧_Email-tkdarkshadow@gmail.com-000?style=for-the-badge)](mailto:tkdarkshadow@gmail.com)
 [![GitHub](https://img.shields.io/badge/💻_GitHub-tanvir81-000?style=for-the-badge)](https://github.com/tanvir81)
-
