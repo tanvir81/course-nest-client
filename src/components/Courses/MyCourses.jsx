@@ -67,7 +67,7 @@ const MyCourses = () => {
     }
   };
 
-  const totalRevenue = courses.reduce((acc, curr) => acc + curr.price, 0);
+  const totalRevenue = courses.reduce((acc, curr) => acc + (Number(curr.price) || 0), 0);
   const featuredCount = courses.filter(c => c.isFeatured).length;
 
   const chartData = courses.slice(0, 10).map(c => ({
